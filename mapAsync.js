@@ -85,3 +85,28 @@ let numPromise = mapLimit([1, 2, 3, 4, 5], 3, function (num, callback) {
 mapLimit2([1, 2, 3, 4, 5], 2, getUserById, (allResults) => {
   console.log("output:", allResults); // ["User1", "User2", "User3", "User4", "User5"]
 });
+
+
+/**** Yet another way ****/
+
+function mapLimit(inputs, limit, iterateeFn, outputCallback) {
+  const indexedInputs = inputs.map((value, index) => ({ value, index }));
+  const results = [];
+
+  function run(input) {
+    iterateeFn(input.value, (result) => {
+      results[input.index] = result;
+
+      if (indexedInputs.length > 0) {
+        const nextInput = indexedInputs.shift();
+        run(nextInput);
+      }
+
+      if (results.length === inputs.length) {
+        outputCallback(results);
+      }
+    });
+  }
+
+  indexedInputs.splice(0, limit).forEach(run);
+}
