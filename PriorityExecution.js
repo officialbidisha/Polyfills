@@ -9,7 +9,7 @@ function resolvePromisesWithPriority(promises) {
   let result = {};
 
   // track the position of the most priority
-  let mostPriority = 0;
+  let mostPriority = 1;
 
   // track the no of promises executed
   let taskCompleted = 0;
@@ -24,6 +24,7 @@ function resolvePromisesWithPriority(promises) {
         .then((value) => {
           result[priority] = value;
           mostPriority = Math.min(mostPriority, i + 1);
+          console.log("MOST", mostPriority);
         })
         .catch((error) => {
           // if the promise is rejected
@@ -32,7 +33,7 @@ function resolvePromisesWithPriority(promises) {
 
           // if the rejected task is the most priority one
           // move to the next most priority
-          if (priority === promises[mostPriority].priority) {
+          if (priority === promises[mostPriority - 1].priority) {
             mostPriority++;
           }
         })
@@ -42,7 +43,7 @@ function resolvePromisesWithPriority(promises) {
           //resolve with these value
           if (
             !rejected[priority] &&
-            priority === promises[mostPriority].priority
+            priority === promises[mostPriority - 1].priority
           ) {
             resolve(priority);
           }
@@ -62,7 +63,7 @@ function resolvePromisesWithPriority(promises) {
 function createAsyncTask(value) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (value < 7 && value !== 2) {
+      if (value < 7) {
         reject();
       } else {
         resolve(value);
