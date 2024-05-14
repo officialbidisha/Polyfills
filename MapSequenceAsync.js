@@ -1,30 +1,29 @@
 function sequence(funcs) {
-  return function (finalCallback, initialData) {
-    /**
-     * We call this callNextFunc for funcs.len times
-     * initially this callNextFunc is called with initial data
-     * and after that it is called repeatedly
-     */
-    let index = 0;
-    const callNextFunc = (data) => {
-      if (index === funcs.length) {
-        // think about the asyncTimes4 function call
-        finalCallback(null, data);
-        return;
-      }
-      const func = funcs[index];
-      index++;
-      let cb = (error, data) => {
-        if (error) {
-          finalCallback(error, undefined);
-        } else {
-          callNextFunc(data);
+  const promiseFuncs = funcs.map(promisify);
+
+  return function (callback, input) {
+    // Use reduce to chain promises sequentially
+    promiseFuncs
+      .reduce((chain, promiseFunc) => {
+        return chain.then((data) => promiseFunc(data));
+      }, Promise.resolve(input)) // Start with a resolved Promise for initial input
+      .then((data) => callback(null, data)) // Call callback with resolved data
+      .catch((error) => callback(error)); // Handle any errors
+  };
+}
+
+function promisify(callback) {
+  return function (input) {
+    return new Promise((resolve, reject) => {
+      callback((err, data) => {
+        if (err) {
+          reject(err);
+          return;
         }
-      };
-      // asyncTimes2
-      func(cb, data);
-    };
-    callNextFunc(initialData);
+
+        resolve(data);
+      }, input);
+    });
   };
 }
 const asyncTimes2 = (callback, num) => {
