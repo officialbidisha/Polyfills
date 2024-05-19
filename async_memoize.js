@@ -8,7 +8,7 @@ function getSomeData(foo, callback) {
     setTimeout(() => {
       console.log("async request");
       fetch(uri).then((res) => {
-        resolve(res);
+        resolve(callback(undefined, res));
       });
     }, 300);
   });
@@ -27,10 +27,9 @@ function memoize(fn) {
 const mem = memoize(getSomeData);
 let cb = (err, res) => {
   if (err) {
-    console.log("err", err);
-    return;
+    return err;
   } else {
-    console.log("res", res);
+    return res;
   }
 };
 
