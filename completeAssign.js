@@ -1,48 +1,34 @@
-function completeAssign(target, ...sources) {
-  if (target === null || target === undefined) {
-    throw new Error("target is Not an object!");
+let cloneDeep = (aObject, map = new Map()) => {
+  //If not a object then return
+  if (!aObject) {
+    return aObject;
   }
-  target = new Object(target);
-  for (const source of sources) {
-    if (!source) {
-      continue;
-    }
-    Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+
+  if (map.has(aObject)) {
+        return map.get(aObject);
   }
-  return target;
-}
-const source = Object.create(
-  {
-    a: 3, // prototype
-  },
-  {
-    b: {
-      value: 4,
-      enumerable: true, // enumerable data descriptor
-    },
-    c: {
-      value: 5, // non-enumerable data descriptor
-    },
-    d: {
-      // non-enumerable accessor descriptor
-      get: function () {
-        return this._d;
-      },
-      set: function (value) {
-        this._d = value;
-      },
-    },
-    e: {
-      // enumerable accessor descriptor
-      get: function () {
-        return this._e;
-      },
-      set: function (value) {
-        this._e = value;
-      },
-      enumerable: true,
-    },
+
+  let v;
+  let bObject =null;
+
+  if(typeof aObject === 'object'){
+  //Check the type of the input
+     bObject =  Array.isArray(aObject) ? [] : {};
   }
-);
-let p = competeAssign({}, source);
-console.log(p);
+  else{
+     bObject = aObject;
+  }
+  map.set(aObject, bObject);
+
+  //Copy each element
+  const keys = [...Object.getOwnPropertySymbols(aObject), ...Object.keys(aObject)]
+  for (const k of keys) {
+    v = aObject[k];
+
+    //If type of element is object
+    //Then recursively call the same function and create  a copy
+    bObject[k] = typeof v === "object" ? cloneDeep(v,map) : v;
+  }
+
+  return bObject;
+};
