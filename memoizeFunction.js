@@ -7,21 +7,14 @@ function memo(func, resolver) {
     const cacheKey = resolver
       ? resolver(...arguments)
       : Array.from(arguments).join(",");
-    console.log("exp", new Map([[1, 2]]));
     const contextMap = cache.get(cacheKey);
     // If there is a corresponding context map to cachekey
     // Check if context is in the map, if so, return value.
     // Else if no corresponding add contextMap, add new entry to the context map
     if (!contextMap) {
       const value = func.apply(this, arguments);
-      let z = new Map();
-      console.log(z.set(this, value));
-      console.log("x", new Map([[this, value]]));
-
-      console.log("ew", cache.get(cacheKey));
       return value;
     }
-
     if (contextMap.has(this)) {
       return contextMap.get(this);
     }
