@@ -38,7 +38,6 @@ function stringify(data) {
 
 const removeCycle = (obj) => {
   //set store
-  console.log(obj);
   const set = new WeakSet([obj]);
 
   //recursively detects and deletes the object references
