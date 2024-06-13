@@ -17,7 +17,7 @@ function memo(func, resolver) {
     }
     if (contextMap.has(this)) {
       return contextMap.get(this);
-    }
+    }          // 
     // If context not in the map, calculate and add to context map.
     const value = func.apply(this, arguments);
     contextMap.set(this, value);
