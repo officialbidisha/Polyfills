@@ -1,40 +1,38 @@
 function stringify(data) {
-  if ([NaN, null, undefined, Infinity].includes(data)) {
+  if (
+    data === NaN ||
+    data === null ||
+    data === Infinity ||
+    data === undefined
+  ) {
     return "null";
   }
-  const type = typeof data;
-  switch (type) {
-    case "function":
-      return undefined;
-    case "bigint":
-      throw Error("bigints are not supported");
-    case "string":
-      return `"${data}"`;
-    case "symbol":
-      return undefined;
-    case "object": {
-      removeCycle(data);
-      if (Array.isArray(data)) {
-        return `[${data
-          .map((e) => (typeof e == "symbol" ? "null" : stringify(e)))
-          .join()}]`;
-      }
-      if (data instanceof Date) {
-        return `"${data.toISOString()}"`;
-      }
+  if (typeof data === "symbol" || typeof data === "function") {
+    return undefined;
+  }
+  if (typeof data === "string") {
+    return `"${data}"`;
+  }
+
+  if (typeof data === "object") {
+    removeCycle(data);
+    if (Array.isArray(data)) {
+      return `[${data.map((e) => stringify(e) || "null").join()}]`;
+    } else {
       return (
         "{" +
         Object.keys(data)
           .filter((key) => data[key] !== undefined)
-          .map((key) => `"${key}":${stringify(data[key])}`)
+          .map((key) => `"${key}": ${stringify(data[key])}`)
           .join() +
         "}"
       );
     }
-    default:
-      return String(data);
+  } else {
+    return String(data);
   }
 }
+
 
 const removeCycle = (obj) => {
   //set store
