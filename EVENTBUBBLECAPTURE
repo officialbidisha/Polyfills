@@ -1,0 +1,46 @@
+// capture
+
+    <div>
+  <button class="child">Hello</button>
+</div>
+
+<script>
+  const parent = document.querySelector("div");
+  const child = document.querySelector(".child");
+
+  parent.addEventListener("click",
+    function () {
+      console.log("Parent");
+    }, true
+  );
+
+  child.addEventListener("click", function () {
+    console.log("Child");
+  });
+</script>
+
+OP: Parent Child
+
+// bubble - default
+
+<div>
+  <button class="child">Hello</button>
+</div>
+
+<script>
+  const parent = document.querySelector("div");
+  const child = document.querySelector(".child");
+
+  parent.addEventListener("click",
+    function () {
+      console.log("Parent");
+    }, 
+  );
+
+  child.addEventListener("click", function () {
+    console.log("Child");
+  });
+</script>
+
+child 
+parent.
