@@ -1,69 +1,75 @@
-
-/**
- * @param {() => Promise<any>} func
- * @param {number} max
- * @return {Promise}
- */
-  // your code here
-  function throttlePromises(funcs, max){
-   return new Promise((resolve, reject) => {
-    let concurrentCount = 0
-    let latestCalledFuncIndex = -1
-    let resultCount = 0
-    let hasError = false
-    const result = []
+function throttlePromises(funcs, max) {
+  return new Promise((resolve, reject) => {
+    let concurrentCount = 0;
+    let latestCalledFuncIndex = -1;
+    let resultCount = 0;
+    let hasError = false;
+    const result = [];
 
     const fetchNext = () => {
-      // already done
-      if (hasError || latestCalledFuncIndex === funcs.length - 1) {
-        return
+      // Termination conditions
+      if (resultCount === funcs.length) {
+        resolve(result);
+        return;
       }
-      // get the func
-      // trigger
-      // update the count
-      // if ok for next fetch, trigger next
 
-      const nextFuncIndex = latestCalledFuncIndex + 1
-      const next = funcs[nextFuncIndex]
-
-      concurrentCount += 1
-      latestCalledFuncIndex += 1
-
-      next().then((data) => {
-        result[nextFuncIndex] = data
-        resultCount += 1
-        concurrentCount -= 1
-
-        if (resultCount === funcs.length) {
-          resolve(result)
-          return
-        }
-
-        fetchNext()
-      }, (err) => {
-        hasError = true
-        reject(err)
-      })
-      
-      if (concurrentCount < max) {
-        fetchNext()
+      // If an error has occurred, stop processing
+      if (hasError) {
+        return;
       }
-    }
 
-    fetchNext()
-  })
- }
- 
+      // Ensure there is room for another concurrent execution
+      while (
+        concurrentCount < max &&
+        latestCalledFuncIndex < funcs.length - 1
+      ) {
+        const nextFuncIndex = ++latestCalledFuncIndex;
+        const next = funcs[nextFuncIndex];
 
-const t1 = () => new Promise(res => setTimeout(() => res('t1'), 3000))
-const t2 = () => new Promise(res => setTimeout(() => res('t2'), 200))
-const t3 = () => new Promise(res => setTimeout(() => res('t3'), 1500))
-const t4 = () => new Promise(res => setTimeout(() => res('t4'), 5000))
-const t5 = () => new Promise(res => setTimeout(() => res('t5'), 4200))
-const t6 = () => new Promise(res => setTimeout(() => res('t6'), 1000))
+        concurrentCount += 1;
 
+        next()
+          .then((data) => {
+            result[nextFuncIndex] = data;
+            resultCount += 1;
+            concurrentCount -= 1;
 
-const tasks = [t1, t2, t3, t4, t5, t6];
+            // If all functions have resolved, resolve the main promise
+            if (resultCount === funcs.length) {
+              resolve(result);
+            } else {
+              // Fetch the next function
+              fetchNext();
+            }
+          })
+          .catch((err) => {
+            hasError = true;
+            reject(err);
+          });
 
+        // Recursively call fetchNext to maintain concurrency level
+        fetchNext();
+      }
+    };
 
-throttlePromises(tasks, 2).then((res)=> console.log(res));
+    // Start the first batch of promises
+    fetchNext();
+  });
+}
+
+const funcs = [
+  () => new Promise((resolve) => setTimeout(() => resolve('Result 1'), 1000)),
+  () => new Promise((resolve) => setTimeout(() => resolve('Result 2'), 500)),
+  () => new Promise((resolve) => setTimeout(() => resolve('Result 3'), 1500)),
+  () => new Promise((resolve) => setTimeout(() => resolve('Result 4'), 100)),
+  () => new Promise((resolve) => setTimeout(() => resolve('Result 5'), 2000)),
+  () => new Promise((resolve) => setTimeout(() => resolve('Result 6'), 300))
+];
+
+const maxConcurrent = 2; // Maximum number of concurrent promises
+
+throttlePromises(funcs, maxConcurrent).then((results) => {
+  console.log('All promises resolved:', results);
+}).catch((error) => {
+  console.error('One of the promises failed:', error);
+});
