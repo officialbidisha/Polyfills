@@ -55,7 +55,6 @@ const asyncGraph = {
 
 function runAsyncGraph(graph, callback) {
   const visited = new Set();
-  const result = [];
   const executionOrder = [];
 
   // Perform DFS to get the topological order
@@ -82,7 +81,6 @@ function runAsyncGraph(graph, callback) {
     const task = graph[node].task;
 
     task(() => {
-      result.push(node);
       executeTasks(index + 1);
     });
   }
