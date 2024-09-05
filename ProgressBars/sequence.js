@@ -15,13 +15,26 @@ function startProgressBar(progressBarId, totalDuration) {
       }, intervalDuration);
     });
   }
-  
+
   async function runProgressBarsSequentially(progressBars) {
     for (const { id, duration } of progressBars) {
       await startProgressBar(id, duration);
     }
     console.log("All progress bars completed");
   }
+
+/**
+ // alternative
+     async function runProgressBars(progressBars) {
+      let chain = Promise.resolve();
+      progressBars.forEach(({ id, duration }) => {
+        chain = chain.then(() => startProgressBar(id, duration));
+      });
+      chain.then(() => {
+        console.log("All progress bars completed");
+      });
+    }
+**/
   
   // Array of progress bar IDs and durations
   const progressBars = [
