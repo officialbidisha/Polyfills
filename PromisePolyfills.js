@@ -87,16 +87,16 @@ function any(promises) {
 * Prototype.finally
 */
 
-async function myFinally(promise, onFinally) {
+function myFinally(promise, onFinally) {
   // your code here
-  try {
-    const val = await promise;
-    await onFinally();
-    return val;
-  } catch(error) {
-    await onFinally();
-    throw error;
-  }
+  return promise.then((value) => {
+    return Promise.resolve(onFinally())
+      .then(() => value)
+  }, (reason) => {
+    return Promise.resolve(onFinally())
+      .then(() => Promise.reject(reason))
+  })
+
 }
 
 
