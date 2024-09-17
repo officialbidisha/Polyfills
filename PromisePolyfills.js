@@ -86,18 +86,21 @@ function any(promises) {
 /**
 * Prototype.finally
 */
-
 function myFinally(promise, onFinally) {
   // your code here
-  return promise.then((value) => {
-    return Promise.resolve(onFinally())
-      .then(() => value)
-  }, (reason) => {
-    return Promise.resolve(onFinally())
-      .then(() => Promise.reject(reason))
-  })
+
+   return promise
+    .then((value) => {
+      // Handle the resolved case
+      return Promise.resolve(onFinally()).then(() => value);
+    })
+    .catch((reason) => {
+      // Handle the rejected case
+      return Promise.resolve(onFinally()).then(() => Promise.reject(reason));
+    });
 
 }
+
 
 
 let a = new Promise((resolve, reject) => {
