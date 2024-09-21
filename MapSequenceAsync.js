@@ -1,9 +1,9 @@
 function sequence(funcs) {
   const promiseFuncs = funcs.map(promisify)
   
-  return function (callback, input) {
+  return async function (callback, input) {
     // init promise
-    let promise = Promise.resolve(input)
+    let promise = Promise.resolve(input);
     
     // add all promiseFuncs to promise
     promiseFuncs.forEach((promiseFunc) => {
@@ -31,4 +31,3 @@ function promisify(fn) {
     })
   } 
 }
-
