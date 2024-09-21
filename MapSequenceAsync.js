@@ -16,18 +16,19 @@ function sequence(funcs) {
     }).catch(callback)
   }   
 }
-
-function promisify(callback) {
+function promisify(fn) {
   return function (input) {
     return new Promise((resolve, reject) => {
-      callback((err, data) => {
+      const cb = (err, data) => {
         if (err) {
           reject(err)
           return
         }
-
         resolve(data)
-      }, input)
+      };
+      
+      fn.call(this, ...[cb, input])
     })
   } 
 }
+
