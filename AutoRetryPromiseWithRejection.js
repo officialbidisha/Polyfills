@@ -18,3 +18,11 @@ function fetchWithAutoRetry(fetcher, maximumRetryCount) {
     tryFetched(maximumRetryCount);
   });
 }
+function fetcher(){
+    return new Promise((resolve, reject)=> {
+       reject(100);
+    })
+}
+fetchPromiseWithRetry(fetcher, 3).then((res)=> {
+console.log(res);
+}).catch((E)=> console.log(E.message));
