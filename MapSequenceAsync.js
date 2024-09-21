@@ -1,7 +1,7 @@
 function sequence(funcs) {
   const promiseFuncs = funcs.map(promisify)
   
-  return async function (callback, input) {
+  return function (callback, input) {
     // init promise
     let promise = Promise.resolve(input);
     
