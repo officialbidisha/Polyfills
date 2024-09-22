@@ -59,3 +59,28 @@ memoizedSquare(6, (err, res) => {
 memoizedSquare(4, (err, res) => {
   if (!err) console.log(res); // Should print 16
 });
+/**
+* Some unrealistic expectation from a stupid shithead of uber panel lol
+*/
+function generateKey(args) {
+  return args.map(arg => {
+    if (arg === null) return 'null';
+    if (typeof arg === 'undefined') return 'undefined';
+    if (typeof arg === 'function') return arg.toString(); // Serialize function
+    if (typeof arg === 'object') return stableStringify(arg); // Use stable stringify for objects
+    return String(arg); // Handle primitives
+  }).join('|'); // Join with a separator
+}
+
+// Stable stringify function to ensure consistent key generation
+function stableStringify(obj) {
+  if (obj === null) return 'null';
+  if (typeof obj !== 'object') return String(obj);
+  
+  const keys = Object.keys(obj).sort(); // Sort keys to maintain order
+  const sortedObj = {};
+  for (const key of keys) {
+    sortedObj[key] = stableStringify(obj[key]); // Recursively stringify values
+  }
+  return JSON.stringify(sortedObj); // Convert to string
+}
