@@ -47,18 +47,35 @@ function promiseRace(promises) {
 /** 
 * Promise.allSettled
 */
-const allSettled = (promises) => {
-  // map the promises to return custom response.
-  const mappedPromises = promises.map((p) =>
-    Promise.resolve(p).then(
-      (val) => ({ status: "fulfilled", value: val }),
-      (err) => ({ status: "rejected", reason: err })
-    )
-  );
+function promiseAllSettles(promises) {
+  return new Promise((resolve) => {
+    let result = [];
+    let completed = 0; // Track how many promises have settled
+    let promiseLength = promises.length;
 
-  // run all the promises once with .all
-  return Promise.all(mappedPromises);
-};
+    if (promiseLength === 0) {
+      resolve(result); // If no promises, resolve immediately with an empty array
+      return;
+    }
+
+    for (let i = 0; i < promises.length; i++) {
+      Promise.resolve(promises[i])
+        .then((res) => {
+          result[i] = { status: "fulfilled", value: res };
+        })
+        .catch((err) => {
+          result[i] = { status: "rejected", reason: err };
+        })
+        .finally(() => {
+          completed++;
+          if (completed === promiseLength) {
+            resolve(result); // Resolve once all promises have settled
+          }
+        });
+    }
+  });
+}
+
 
 /**
 * Promise.any
