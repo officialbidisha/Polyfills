@@ -72,3 +72,23 @@ function sum(a, b, c) {
 let curriedSum = curry(sum);
 
 console.log(curriedSum(1)(2)(4)); // 3
+
+
+/// Added sum for empty argument.
+
+function sum(...args) {
+  if (args.length === 0) {
+    return args.reduce((a, b) => a + b);
+  } else {
+    return function (...args2) {
+      let tempArr = [...args, ...args2];
+      if (args2.length === 0) {
+        return tempArr.reduce((a, b) => a + b, 0);
+      }
+      return sum(...tempArr);
+    };
+  }
+}
+console.log(sum(1)(2)(3)(4)()); // Output: 10
+console.log(sum(1)(2, 3)(4)()); // Output: 10
+
