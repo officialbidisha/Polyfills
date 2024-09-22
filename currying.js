@@ -3,7 +3,6 @@
 const sum = (...args) => {
   //spread the arguments in storage array
   const storage = [...args];
-  
   //base case
   //if invoked without any argument
   if(storage.length === 0){
@@ -27,7 +26,6 @@ const sum = (...args) => {
         return temp;
       }
     }
-
     //return the function
     return temp;
   }
@@ -44,3 +42,33 @@ const sum = (...args) => {
     return storage.reduce((a, b) => a + b, 0);
   }
 }
+
+
+
+/**
+* Curry using a sum and when the function is called internally.
+* let curriedSum = curry(sum);
+* console.log(curriedSum(1)(2)(4)); // 3
+*/
+//
+function curry(f) {
+  // curry(f) does the currying transform
+  return function curried(...args) {
+    if (args.length >= f.length) {
+      return f.apply(this, [...args]);
+    } else {
+      return function (...args2) {
+        return curried.apply(this, [...args, ...args2]);
+      };
+    }
+  };
+}
+
+// usage
+function sum(a, b, c) {
+  return a + b + c;
+}
+
+let curriedSum = curry(sum);
+
+console.log(curriedSum(1)(2)(4)); // 3
