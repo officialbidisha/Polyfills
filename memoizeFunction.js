@@ -24,32 +24,19 @@ function memoize(fn) {
 * Complicated memoize,
 */
 
+// when resolver is given to be the array from arghuments.join
 
-function memo(func, resolver) {
-  // your code here
+function memo(func, resolver = (...args) => args.join('_')) {
   const cache = new Map();
-
-  // Map<cacheKey, Map<context, value>>
-  return function () {
-    const cacheKey = resolver
-      ? resolver(...arguments)
-      : Array.from(arguments).join(",");
-    const contextMap = cache.get(cacheKey);
-    // If there is a corresponding context map to cachekey
-    // Check if context is in the map, if so, return value.
-    // Else if no corresponding add contextMap, add new entry to the context map
-    if (!contextMap) {
-      const value = func.apply(this, arguments);
-      return value;
+  return function(...args) {
+    const cacheKey = resolver(...args);
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey);
     }
-    if (contextMap.has(this)) {
-      return contextMap.get(this);
-    }          // 
-    // If context not in the map, calculate and add to context map.
-    const value = func.apply(this, arguments);
-    contextMap.set(this, value);
+    const value = func.apply(this, args);
+    cache.set(cacheKey, value);
     return value;
-  };
+  }
 }
 
 function testThis(a) {
