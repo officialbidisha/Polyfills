@@ -1,3 +1,30 @@
+/**
+* Simple Memoize
+*/
+function memoize(fn) {
+  const cache = new Map(); // A Map to store the results
+
+  return function (...args) {
+    const key = JSON.stringify(args); // Convert arguments to a unique key (string)
+
+    if (cache.has(key)) {
+      console.log("Fetching from cache");
+      return cache.get(key); // Return cached result if available
+    }
+
+    console.log("Calculating result");
+    const result = fn(...args); // Call the original function
+    cache.set(key, result); // Store the result in the cache
+    return result;
+  };
+}
+
+
+/**
+* Complicated memoize,
+*/
+
+
 function memo(func, resolver) {
   // your code here
   const cache = new Map();
