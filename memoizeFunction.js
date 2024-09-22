@@ -26,10 +26,10 @@ function memoize(fn) {
 
 // when resolver is given to be the array from arghuments.join
 
-function memo(func, resolver = (...args) => args.join('_')) {
+function memo(func, resolver) {
   const cache = new Map();
   return function(...args) {
-    const cacheKey = resolver(...args);
+    const cacheKey = resolver? resolver(...args): args.join("_");
     if (cache.has(cacheKey)) {
       return cache.get(cacheKey);
     }
