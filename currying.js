@@ -58,3 +58,30 @@ function sum(...args) {
 console.log(sum(1)(2)(3)(4)()); // Output: 10
 console.log(sum(1)(2, 3)(4)()); // Output: 10
 
+/*Custom method with sum that triggers currying with empty arguments*/
+
+function curry(fn) {
+  return function (...args) {
+    let storage = [...args];
+    if (storage.length === 0) {
+      console.log("h");
+      return fn.apply(this, storage);
+    } else {
+      return function curried(...args2) {
+        if (args2.length === 0) {
+          return fn.apply(this, storage);
+        } else {
+          storage = [...storage, ...args2];
+          return curried;
+        }
+      };
+    }
+  };
+}
+
+let sum = (a, b) => a + b;
+
+let c = curry(sum);
+console.log(c(1)(2)());
+
+
