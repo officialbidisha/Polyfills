@@ -33,7 +33,6 @@ function stringify(data) {
     return `[${arrayContents.join(',')}]`;
   }
   if (typeof data === 'object') {
-    removeCycle(data);
     const keyValuePairs = Object.keys(data)
       .map((key) => {
         const value = stringify(data[key]);
@@ -44,6 +43,7 @@ function stringify(data) {
   }
   return 'null';
 }
+
 
 
 
