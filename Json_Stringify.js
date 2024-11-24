@@ -1,37 +1,50 @@
+/**
+ * @param {any} data
+ * @return {string}
+ */
 function stringify(data) {
-  if (
-    data === NaN ||
-    data === null ||
-    data === Infinity ||
-    data === undefined
-  ) {
-    return "null";
+  if (data === null) return 'null';
+  if (typeof data === 'number') {
+    // Handle NaN and Infinity
+    if (isNaN(data) || !isFinite(data)) {
+      return 'null';
+    }
+    return data.toString();
   }
-  if (typeof data === "symbol" || typeof data === "function") {
-    return undefined;
+  if (typeof data === 'boolean') {
+    return data.toString();
   }
-  if (typeof data === "string") {
+  if (typeof data === 'string') {
     return `"${data}"`;
   }
-
-  if (typeof data === "object") {
-    removeCycle(data);
-    if (Array.isArray(data)) {
-      return `[${data.map((e) => stringify(e) || "null").join()}]`;
-    } else {
-      return (
-        "{" +
-        Object.keys(data)
-          .filter((key) => data[key] !== undefined)
-          .map((key) => `"${key}": ${stringify(data[key])}`)
-          .join() +
-        "}"
-      );
-    }
-  } else {
-    return String(data);
+  if (typeof data === 'undefined' || typeof data === 'function' || typeof data === 'symbol') {
+    return undefined; // These types are omitted in objects
   }
+  if (data instanceof Date) {
+    // Serialize Date objects as ISO strings
+    return `"${data.toISOString()}"`;
+  }
+  if (typeof data === 'bigint') {
+    // Serialize BigInt values as strings (JSON.stringify does not support BigInt)
+    throw new Error('BigInt');
+  }
+  if (Array.isArray(data)) {
+    const arrayContents = data.map((element) => stringify(element) || 'null');
+    return `[${arrayContents.join(',')}]`;
+  }
+  if (typeof data === 'object') {
+    removeCycle(data);
+    const keyValuePairs = Object.keys(data)
+      .map((key) => {
+        const value = stringify(data[key]);
+        return value !== undefined ? `"${key}":${value}` : undefined;
+      })
+      .filter((pair) => pair !== undefined);
+    return `{${keyValuePairs.join(',')}}`;
+  }
+  return 'null';
 }
+
 
 
 const removeCycle = (obj) => {
