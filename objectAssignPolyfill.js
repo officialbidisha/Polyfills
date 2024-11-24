@@ -1,38 +1,24 @@
-/**
- * @param {any} target
- * @param {any[]} sources
- * @return {object}
- */
 function objectAssign(target, ...sources) {
-  debugger;
-  if (!target) {
-    throw new Error();
-  }
-
-  if (typeof target !== "object") {
-    const constructor = Object.getPrototypeOf(target).constructor;
-    target = new constructor(target);
-  }
-
-  for (const source of sources) {
-    if (!source) {
-      continue;
+    if (target == null) { // Check if target is null or undefined
+      throw new TypeError('Cannot convert undefined or null to object');
     }
 
-    const keys = [
-      ...Object.keys(source),
-      ...Object.getOwnPropertySymbols(source),
-    ];
-    for (const key of keys) {
-      const descriptor = Object.getOwnPropertyDescriptor(target, key);
-      console.log("des", descriptor);
-      if (descriptor && !descriptor.configurable) {
-        throw new Error();
+    const to = Object(target); // Convert the target to an object
+
+    sources.forEach(source => {
+      if (source != null) { // Skip over undefined or null sources
+      let keys = [...Object.getOwnPropertySymbols(source), ...Object.keys(source)]
+        for (let key of keys) {
+          const descriptor = Object.getOwnPropertyDescriptor(to, key);
+
+          // Check if the property is non-writable
+          if (descriptor && !descriptor.writable) {
+            throw new TypeError(`Cannot assign to read-only property '${key}'`);
+          }
+          target[key] = source[key];
+        }
       }
+    });
 
-      target[key] = source[key];
-    }
-  }
-
-  return target;
-}
+    return to;
+  };
