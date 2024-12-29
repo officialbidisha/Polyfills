@@ -62,13 +62,13 @@ class BlogPost {
   }
 
   async createPost(postData) {
-    const response = this.cachedRequest(`path`, HTTP_METHODS.POST, postData);
+    const response = this.cachedRequest(`/path`, HTTP_METHODS.POST, postData);
     this.invalidateCache(`/path`);
     return response;
   }
 
   async deletePost(id) {
-    const response = this.cachedRequest(`path?id=${id}`, HTTP_METHODS.DELETE);
+    const response = this.cachedRequest(`/path?id=${id}`, HTTP_METHODS.DELETE);
     this.invalidateCache(`/path?id=${id}`);
     this.invalidateCache(`/path`);
     return response;
