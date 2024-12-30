@@ -24,14 +24,17 @@ let ongoingFetchPromise = null;
 
 // DO NOT CHANGE THE FUNCTION NAME
 function getFeatureState(featureName, defaultValue) {
-  // Serve from cache if valid
+  // Serve from cache .if valid
+  console.log('cah', Cache);
   if (Cache.featureFlags && Date.now() - Cache.timestamp < MAX_CACHE_TTL) {
+    console.log('from caxhe----')
     const value = Cache.featureFlags[featureName] ?? defaultValue;
     return Promise.resolve(value);
   }
 
   // Reuse ongoing fetch promise if available
   if (ongoingFetchPromise) {
+    console.log('---STRUCK------');
     return ongoingFetchPromise.then((featureFlags) => featureFlags[featureName] ?? defaultValue);
   }
 
@@ -40,6 +43,7 @@ function getFeatureState(featureName, defaultValue) {
     .then((featureFlags) => {
       Cache.timestamp = Date.now();
       Cache.featureFlags = featureFlags;
+    console.log('---set cache----', Cache);
       return featureFlags;
     })
     .finally(() => {
@@ -66,6 +70,17 @@ getFeatureState("show_pricing_v2", false)
       showRedesignedDialog();
     }
   });
+
+setTimeout(()=>{
+  getFeatureState("show_pricing_v2", false)
+  .then(function (isEnabled) {
+    if (isEnabled) {
+      showRedesignedDialog();
+    }
+  });
+
+}, 3000)
+
 
 // Example feature-specific functions
 function showPricingV2() {
