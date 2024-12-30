@@ -1,47 +1,7 @@
 const SAMPLE_FEATURES = {
   show_dialog_box: true,
   enable_new_pricing: true,
-};
-
-const Cache = {
-  timestamp: null,
-  featureFlags: {},
-}
-
-const MAX_CACHE_TTL = 10000;
-
-// returns the state of *all* features for the current user
-function fetchAllFeatures() {
-  // mocking the fetch API call
-  console.log('---FETCH ALL FEATURES---');
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(SAMPLE_FEATURES), 100);
-  });
-}
-
-// DO NOT CHANGE THE FUNCTION NAME
-function getFeatureState(featureName, defaultValue) {
-  // write your solution here
-
-  if (Cache.featureFlags && Date.now() - Cache.timestamp < MAX_CACHE_TTL) {
-    const value = Object.prototype.hasOwnProperty.call(Cache.featureFlags,
-      featureName) ? Cache.featureFlags[featureName] : defaultValue;
-    return Promise.resolve(value);
-  }
-  return fetchAllFeatures().then((featureFlags) => {
-    Cache.timestamp = Date.now();
-    Cache.featureFlags = featureFlags;
-    return Object.prototype.hasOwnProperty.call(featureFlags,
-      featureName) ? featureFlags[featureName] : defaultValue;
-  }).catch((err) => {
-    return defaultValue;
-  })
-}
-
-/*
-const SAMPLE_FEATURES = {
-  show_dialog_box: true,
-  enable_new_pricing: true,
+  show_pricing_v2: true,
 };
 
 const Cache = {
@@ -66,19 +26,13 @@ let ongoingFetchPromise = null;
 function getFeatureState(featureName, defaultValue) {
   // Serve from cache if valid
   if (Cache.featureFlags && Date.now() - Cache.timestamp < MAX_CACHE_TTL) {
-    const value = Object.prototype.hasOwnProperty.call(Cache.featureFlags, featureName)
-      ? Cache.featureFlags[featureName]
-      : defaultValue;
+    const value = Cache.featureFlags[featureName] ?? defaultValue;
     return Promise.resolve(value);
   }
 
   // Reuse ongoing fetch promise if available
   if (ongoingFetchPromise) {
-    return ongoingFetchPromise.then((featureFlags) => {
-      return Object.prototype.hasOwnProperty.call(featureFlags, featureName)
-        ? featureFlags[featureName]
-        : defaultValue;
-    });
+    return ongoingFetchPromise.then((featureFlags) => featureFlags[featureName] ?? defaultValue);
   }
 
   // Initiate a new fetch operation
@@ -93,31 +47,35 @@ function getFeatureState(featureName, defaultValue) {
       ongoingFetchPromise = null;
     });
 
-  return ongoingFetchPromise.then((featureFlags) => {
-    return Object.prototype.hasOwnProperty.call(featureFlags, featureName)
-      ? featureFlags[featureName]
-      : defaultValue;
-  }).catch(() => {
-    return defaultValue;
-  });
+  return ongoingFetchPromise.then((featureFlags) => featureFlags[featureName] ?? defaultValue).catch(() => defaultValue);
 }
 
-// Example Usage
-getFeatureState("show_dialog_box", false)
-  .then((isEnabled) => {
+// Example usage:
+getFeatureState("show_pricing_v2", false)
+  .then(function (isEnabled) {
     if (isEnabled) {
-      console.log("Show Dialog Box");
+      showPricingV2();
     } else {
-      console.log("Do not show Dialog Box");
+      showOldPricing();
     }
   });
 
-getFeatureState("enable_new_pricing", false)
-  .then((isEnabled) => {
+getFeatureState("show_pricing_v2", false)
+  .then(function (isEnabled) {
     if (isEnabled) {
-      console.log("Enable New Pricing");
-    } else {
-      console.log("Use Old Pricing");
+      showRedesignedDialog();
     }
   });
-*/
+
+// Example feature-specific functions
+function showPricingV2() {
+  console.log("Showing the new pricing page");
+}
+
+function showOldPricing() {
+  console.log("Showing the old pricing page");
+}
+
+function showRedesignedDialog() {
+  console.log("Showing the redesigned dialog");
+}
