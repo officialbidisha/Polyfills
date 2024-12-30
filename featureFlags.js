@@ -94,3 +94,12 @@ function showOldPricing() {
 function showRedesignedDialog() {
   console.log("Showing the redesigned dialog");
 }
+
+
+/**
+* If you simply return ongoingFetchPromise, the function would return a promise that resolves to all 
+feature flags instead of the individual feature flag value you're looking for. 
+This would break the intended behavior because you want the specific feature flag value for the given featureName.
+* The key is to chain .then() after ongoingFetchPromise resolves, 
+so that you can return the correct value (either from the cache or the fetched data).
+*/
