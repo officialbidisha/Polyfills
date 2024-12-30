@@ -40,6 +40,7 @@ class BlogPost {
     let cacheKey = `${endpoint}_${method}`;
     let cachedData = this.cache.get(cacheKey);
     if (cachedData && Date.now() - cachedData.timestamp < this.maxTtl) {
+      console.log("---FROM CACHE----");
       return cachedData.data;
     }
     const response = await this.makeRequest(endpoint, method, body, 0);
